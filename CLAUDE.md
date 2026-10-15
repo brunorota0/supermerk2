@@ -1,8 +1,13 @@
 # CLAUDE.md
 
-Este repo es una **extensión de Chrome (Manifest V3)** que planifica las compras de supermercado en Carrefour Argentina a partir del historial de pedidos del usuario y arma el carrito, sin pagar. No hay build, bundler ni dependencias: se carga la carpeta `extension/` tal cual.
+Este repo planifica las compras de supermercado en Carrefour Argentina a partir del historial de pedidos del usuario y arma el carrito, sin pagar. Conviven dos versiones independientes:
 
-## Estructura
+- **Skill de Claude (original)**, en la raíz: `SKILL.md`, `analizar.js`, `cargar_carrito.js`, `api-carrefour.md` y `README.md`. **No tocar ni borrar estos archivos**: otra persona usa la skill desde `main`. Los cambios nuevos van en la extensión.
+- **Extensión de Chrome (Manifest V3)**, en `extension/`. No hay build, bundler ni dependencias: se carga la carpeta tal cual. Su README es `extension/README.md`.
+
+La lógica de análisis de la extensión (`extension/lib/analisis.js`) salió de `analizar.js`, pero ya divergió: no se sincronizan.
+
+## Estructura de la extensión
 - `extension/manifest.json`: permisos `sidePanel`, `storage`, `alarms`, `notifications`, `scripting`; host `https://www.carrefour.com.ar/*`.
 - `extension/background.js`: service worker (módulo). Abre el panel desde el ícono y una vez por día (`chrome.alarms`) revisa si toca pedir y manda una notificación.
 - `extension/panel/`: panel lateral (`panel.html`, `panel.css`, `panel.js`), con las vistas Pedido y Configuración. `intro.js` es la guía de bienvenida (se muestra si `config.introVista` es falso y desde Configuración). `dom.js` tiene los helpers `h()`, `poner()` y `boton()`.
@@ -11,7 +16,7 @@ Este repo es una **extensión de Chrome (Manifest V3)** que planifica las compra
 - `extension/lib/analisis.js`: **funciones puras** (`perfil`, `oferta`, `precioItem`, `decidir`). Sin red ni `chrome.*`, para poder probarlas en Node.
 - `extension/lib/vtex.js`: llamadas a la API VTEX a través de un *transporte*.
 - `extension/lib/store.js`: `chrome.storage.local` (config, caché del historial y último aviso).
-- `docs/api-carrefour.md`: endpoints, formato de precios y cómo leer las promos. Actualizalo si cambia la API.
+- `docs/api-carrefour.md`: endpoints, formato de precios y cómo leer las promos, actualizado para la extensión (la copia de la raíz es la de la skill). Actualizalo si cambia la API.
 
 ## Cómo se habla con Carrefour
 - **Con sesión** (`transporteTab`): las llamadas corren dentro de la pestaña de carrefour.com.ar con `chrome.scripting.executeScript`. Son del mismo origen y usan las cookies del usuario. La función que se inyecta (`pedir`) se serializa, así que no puede usar nada de fuera de su cuerpo.
