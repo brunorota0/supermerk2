@@ -47,7 +47,7 @@ No hay tests automáticos en el repo. Para probar:
 4. Aviso diario: desde la consola del service worker, `chrome.alarms.create('chequeo-diario', { when: Date.now() + 1000 })`.
 
 ## Git
-- No commitear salvo que el usuario lo pida, y nunca en `main`. Se trabaja en la branch `bruno`.
+- No commitear salvo que el usuario lo pida, y nunca en `main`. Usar la branch que indique el usuario (hoy, `extension-version`). No hacer push sin pedido.
 
 ## Pendiente
 - Definir la distribución: Chrome Web Store, `.zip` o solo modo desarrollador.
