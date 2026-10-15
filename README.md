@@ -1,33 +1,42 @@
-# compras-carrefour
+# Compras Carrefour
 
-Skill para Claude que planifica las compras en **Carrefour Argentina** (carrefour.com.ar) a partir del historial de pedidos de quien la usa:
+Extensión de Chrome que planifica las compras en **Carrefour Argentina** (carrefour.com.ar) a partir del historial de pedidos de quien la usa:
 
 - calcula cada cuánto compra cada producto (mediana entre pedidos)
 - detecta lo que le toca reponer y lo que conviene adelantar por promo
-- recomienda si pedir esta semana o estirar una más
+- recomienda si pedir esta semana o estirar una más, y avisa con una notificación
 - arma el carrito, sin pasar por el checkout ni pagar
 
-No contiene datos de ningún usuario: todo se infiere del historial de la persona que la use.
+No contiene datos de ningún usuario: todo se infiere del historial de la persona que la use y queda solo en su navegador.
 
 ## Requisitos
-- Claude con la app de escritorio y el navegador integrado.
-- Una cuenta de Carrefour Argentina con pedidos previos (mínimo 4).
+- Chrome 116 o más nuevo.
+- Una cuenta de Carrefour Argentina con pedidos previos (mínimo 4 para calcular la frecuencia).
+
+## Instalación (modo desarrollador)
+1. Abrí `chrome://extensions` y activá **Modo de desarrollador**.
+2. **Cargar extensión sin empaquetar** → elegí la carpeta `extension/`.
+3. Abrí carrefour.com.ar, iniciá sesión y tocá el ícono de la extensión: se abre el panel lateral.
 
 ## Uso
-1. Instalá la skill (carpeta `compras-carrefour/` o el archivo `.skill`).
-2. Pedile a Claude "¿me toca pedir al súper?" o "armame el carrito de Carrefour".
-3. Si no tiene sesión, iniciá sesión vos en el panel del navegador. Claude nunca pide ni guarda tu contraseña.
+- **Pedido**: la decisión de la semana, las listas (necesarios, para adelantar, fijos), las preguntas y lo que no tiene stock, con buscador de reemplazos. Elegí qué llevar y tocá **Cargar**. Después revisá el carrito y pagalo vos en el sitio.
+- **Configuración**: umbrales, productos fijos, productos que ya no comprás, avisos y borrado de datos.
+- **Avisos**: una vez por día revisa tu historial guardado y las promos públicas, y te avisa cuando te toca pedir.
 
 ## Estructura
-- `SKILL.md`: instrucciones para Claude.
-- `scripts/analizar.js`: lee historial y precios y devuelve la decisión (solo lectura).
-- `scripts/cargar_carrito.js`: carga la lista aprobada en el carrito (no paga).
-- `references/api-carrefour.md`: endpoints y formato de precios.
+- `extension/manifest.json`: manifiesto MV3.
+- `extension/background.js`: abre el panel y hace el chequeo diario.
+- `extension/panel/`: interfaz del panel lateral.
+- `extension/lib/analisis.js`: cálculo de frecuencia, promos y decisión (funciones puras).
+- `extension/lib/vtex.js`: llamadas a la API de Carrefour.
+- `extension/lib/store.js`: configuración e historial guardados en `chrome.storage.local`.
+- `docs/api-carrefour.md`: endpoints y formato de precios.
 
 ## Limitaciones
 - Los endpoints de Carrefour (VTEX) no son públicos ni documentados: pueden cambiar sin aviso.
 - Revisá los términos de uso de Carrefour antes de automatizar compras.
-- Las categorías de sustitución y los perecederos son heurísticas: la skill las muestra para que la persona las corrija.
+- El aviso diario usa precios públicos: las promos coinciden con las de tu sucursal, pero precio y stock pueden no coincidir.
+- Las categorías de sustitución y los perecederos son heurísticas: la persona las corrige respondiendo las preguntas y desde Configuración.
 
 ## Licencia
 MIT

@@ -3,8 +3,8 @@
 carrefour.com.ar corre sobre VTEX. Con la sesión iniciada en el navegador, estas APIs responden con las cookies del sitio; no hace falta token. Hay que llamarlas desde una página de carrefour.com.ar (mismo origen).
 
 ## Autenticación
-- El login se hace en el navegador, a cargo de la persona. La skill no maneja contraseñas ni tokens.
-- La sesión queda en las cookies del sitio. La skill solo ejecuta llamadas desde la página de Carrefour, con `credentials: 'include'`.
+- El login se hace en el navegador, a cargo de la persona. La extensión no maneja contraseñas ni tokens.
+- La sesión queda en las cookies del sitio. La extensión ejecuta las llamadas con sesión dentro de la pestaña de Carrefour (`chrome.scripting.executeScript`), con `credentials: 'include'`. El catálogo público también se puede leer sin sesión (lo usa el chequeo diario).
 - Estos endpoints no son públicos ni documentados: pueden cambiar sin aviso.
 
 ## Historial
@@ -27,7 +27,7 @@ carrefour.com.ar corre sobre VTEX. Con la sesión iniciada en el navegador, esta
 - `GET /api/checkout/pub/orderForm` → carrito actual: `orderFormId`, `loggedIn`, `items`, `totalizers` (Items, Discounts, Shipping), `value`, `messages`.
 - Agregar: `POST /api/checkout/pub/orderForm/{id}/items?sc=1` con `{"orderItems":[{"id":"<SKU>","quantity":N,"seller":"1"}]}`.
 - Cambiar cantidades / sacar: `POST /api/checkout/pub/orderForm/{id}/items/update` con `{"orderItems":[{"index":i,"quantity":N}]}` (0 = sacar).
-- Cada ítem trae `availability` (`available` / `cannotBeDelivered`), y `messages` explica qué no se puede entregar a su dirección.
+- Cada ítem trae `availability` (`available` / `cannotBeDelivered` / …). `cannotBeDelivered` viene con un mensaje "no pudo ser enviado para las coordenadas seleccionadas", pero en la práctica es **sin stock en la sucursal**: el sitio lo muestra como SIN STOCK. El catálogo (`AvailableQuantity`) puede decir que hay stock igual.
 - Carrefour separa el carrito por tipo (ej. "Supermercado"). En el checkout pide elegir carrito y ofrece "Continuar con disponibles", que borra los sin stock. Eso lo hace el usuario.
 - Hay un mínimo de compra para el carrito Supermercado.
 
